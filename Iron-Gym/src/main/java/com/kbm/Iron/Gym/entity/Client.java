@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -15,7 +17,7 @@ public class Client {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY )
-    private int client_id;
+    private int clientId;
     private String fName;
     private String lName;
     private String email;
@@ -24,7 +26,34 @@ public class Client {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @OneToOne
-    @Column(name = "scheduleId")
+    @ManyToOne
+    @JoinColumn(name = "scheduleId", nullable = false, referencedColumnName = "scheduleId")
     private Schedule schedule;
+
+    @OneToMany(mappedBy = "client" , cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Payment> payments = new HashSet<>();
+
+    @PrePersist
+    public void prePersist(){
+        if (this.schedule == null){
+            this.schedule = new Schedule();
+            this.schedule.setScheduleId(1);
+        }
+    }
+
+    public String getfName() {
+        return fName;
+    }
+
+    public void setfName(String fName) {
+        this.fName = fName;
+    }
+
+    public String getlName() {
+        return lName;
+    }
+
+    public void setlName(String lName) {
+        this.lName = lName;
+    }
 }

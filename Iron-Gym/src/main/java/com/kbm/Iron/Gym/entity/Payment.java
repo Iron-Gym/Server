@@ -17,7 +17,13 @@ public class Payment {
     private int paymentId;
     private double amount;
     private Date paymentDate;
+    @Enumerated(EnumType.STRING)
+    private Month month;
     private Date dueDate;
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
+
+    @ManyToOne
+    @JoinColumn(name = "clientId" ,referencedColumnName = "clientId", nullable = false)
+    private Client client;
 }
