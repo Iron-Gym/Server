@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,7 +23,7 @@ public class Client {
     private String lName;
     private String email;
     private String phone;
-    private Date registrationDate;
+    private LocalDate registrationDate;
     @Enumerated(EnumType.STRING)
     private Status status;
 
