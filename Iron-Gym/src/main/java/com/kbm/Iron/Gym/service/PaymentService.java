@@ -28,14 +28,6 @@ public class PaymentService {
     @Autowired
     ClientRepository clientRepository;
 
-    @Autowired
-    NotificationRepository notificationRepository;
-
-    @Autowired
-    private JavaMailSender mailSender;
-
-    private static final Logger logger = LoggerFactory.getLogger(PaymentService.class);
-
 
     @Transactional
     public Payment savePayment(Payment payment, Integer clientId) {
@@ -48,64 +40,4 @@ public class PaymentService {
     }
 
 
-    @Scheduled(cron = "0 0 0 * * ?") // Runs every day at midnight
-    public void sendFeeReminders() {
-        LocalDate today = LocalDate.now();
-        List<Client> clients = clientRepository.findAll();
-
-        for (Client client : clients) {
-            LocalDate startDate = client.getRegistrationDate();
-            if (startDate != null && today.isAfter(startDate) && today.minusDays(30).equals(startDate)) {
-                sendReminderEmail(client);
-            } else if(startDate != null && today.isAfter(startDate) && today.minusDays(45).equals(startDate)) {
-                sendLateFeeReminerMail(client);
-            }
-        }
-    }
-
-    @Transactional
-    private void sendLateFeeReminerMail(Client client) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(client.getEmail());
-        message.setSubject("Late Fee Reminder");
-        message.setText(MailConfig.lateFeeMsg);
-
-        try {
-            mailSender.send(message);
-            saveEmail(client.getEmail(),"Late Fee Reminder", MailConfig.monthlyFeeMsg,"SENT","EMAIL",client.getPhone());
-            logger.info("Reminder email sent successfully to {}", client.getEmail());
-        } catch (MailException e) {
-            logger.error("Error while sending email to {}: {}", client.getEmail(), e.getMessage());
-            saveEmail(client.getEmail(),"Fee Reminder", MailConfig.monthlyFeeMsg,"FAILED","EMAIL",client.getPhone());
-        }
-    }
-
-    @Transactional
-    private void sendReminderEmail(Client client) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(client.getEmail());
-        message.setSubject("Fee Reminder");
-        message.setText(MailConfig.monthlyFeeMsg);
-
-        try {
-            mailSender.send(message);
-            saveEmail(client.getEmail(),"Fee Reminder", MailConfig.monthlyFeeMsg,"SENT","EMAIL",client.getPhone());
-            logger.info("Reminder email sent successfully to {}", client.getEmail());
-        } catch (MailException e) {
-            logger.error("Error while sending email to {}: {}", client.getEmail(), e.getMessage());
-            saveEmail(client.getEmail(),"Fee Reminder", MailConfig.monthlyFeeMsg,"FAILED","EMAIL",client.getPhone());
-        }
-    }
-
-    private void saveEmail(String to,String subject,String body, String status,String type, String phone){
-        Notification notification = new Notification();
-        notification.setRecipientEmail(to);
-        notification.setSubject(subject);
-        notification.setMessage(body);
-        notification.setType(Type.valueOf(type));
-        notification.setSentDate(LocalDate.now());
-        notification.setRecipientPhone(phone);
-        notification.setStatus(MsgStatus.valueOf(status));
-        notificationRepository.save(notification);
-    }
 }

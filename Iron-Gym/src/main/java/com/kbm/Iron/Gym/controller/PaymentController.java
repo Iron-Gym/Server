@@ -13,6 +13,8 @@ public class PaymentController {
     @Autowired
     PaymentService paymentService;
 
+
+//add payment to a specific user
     @PostMapping("/{clientId}")
     public ResponseEntity<Payment> savePayment(@RequestBody Payment payment, @PathVariable Integer clientId){
         Payment savedPayment = paymentService.savePayment(payment,clientId);

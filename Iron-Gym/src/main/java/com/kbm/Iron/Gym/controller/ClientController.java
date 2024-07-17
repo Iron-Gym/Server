@@ -32,6 +32,13 @@ public class ClientController {
         return ResponseEntity.ok(savedClient);
     }
 
+    //update a client
+    @PutMapping("/{clientId}")
+    public ResponseEntity<Client> updateClient(@RequestBody Client client, @PathVariable Integer clientId){
+        Client updatedClient = clientService.updateClient(client,clientId);
+        return ResponseEntity.ok(updatedClient);
+    }
+
     //get a client
     @GetMapping("/{id}")
     public ResponseEntity<Client> getClient(@PathVariable Integer id) {

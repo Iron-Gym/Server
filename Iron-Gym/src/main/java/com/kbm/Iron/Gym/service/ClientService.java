@@ -25,4 +25,22 @@ public class ClientService {
     public Optional<Client> getClient(Integer id) {
         return clientRepository.findById(id);
     }
+
+    public Client updateClient(Client client, Integer clientId) {
+        Optional<Client> tempClient = clientRepository.findById(clientId);
+        Client updatedClient = null;
+        if (tempClient.isPresent()){
+            updatedClient = tempClient.get();
+
+            updatedClient.setfName(client.getfName());
+            updatedClient.setlName(client.getlName());
+            updatedClient.setEmail(client.getEmail());
+            updatedClient.setPhone(client.getPhone());
+            updatedClient.setRegistrationDate(client.getRegistrationDate());
+            updatedClient.setStatus(client.getStatus());
+
+            updatedClient = clientRepository.save(updatedClient);
+        }
+        return updatedClient;
+    }
 }
