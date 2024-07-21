@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -16,10 +17,10 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int paymentId;
     private double amount;
-    private Date paymentDate;
+    private LocalDate paymentDate;
     @Enumerated(EnumType.STRING)
     private Month month;
-    private Date dueDate;
+    private LocalDate dueDate;
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 

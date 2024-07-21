@@ -43,6 +43,6 @@ public class ClientController {
     @GetMapping("/{id}")
     public ResponseEntity<Client> getClient(@PathVariable Integer id) {
         Optional<Client> client = clientService.getClient(id);
-        return client.isPresent() ? ResponseEntity.ok(client.get()) : ResponseEntity.notFound().build();
+        return client.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
