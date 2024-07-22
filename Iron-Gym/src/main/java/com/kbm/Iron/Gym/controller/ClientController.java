@@ -25,6 +25,13 @@ public class ClientController {
         return ResponseEntity.ok(clients);
     }
 
+    //get all active clients
+    @GetMapping("/active-clients")
+    public ResponseEntity<List<Client>> getAllActiveClients(){
+        List<Client> clients = clientService.getAllActiveClients();
+        return ResponseEntity.ok(clients);
+    }
+
     //save a client
     @PostMapping
     public ResponseEntity<Client> createClient(@RequestBody Client client) {

@@ -21,6 +21,7 @@ public class Client {
     private int clientId;
     private String fName;
     private String lName;
+    private int age;
     private String email;
     private String phone;
     private LocalDate registrationDate;
@@ -56,5 +57,13 @@ public class Client {
 
     public void setlName(String lName) {
         this.lName = lName;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
     }
 }
