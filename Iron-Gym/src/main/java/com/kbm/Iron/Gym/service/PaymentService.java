@@ -99,22 +99,6 @@ public class PaymentService {
         }
     }
 
-    public Double getIncomeOfaMonth(YearMonth month) {
-        try {
-            LocalDate startDate = month.atDay(1);
-            LocalDate endDate = month.atEndOfMonth();
-            double income = 0.0;
-            List<Payment> payments = paymentRepository.findPaymentsByMonth(startDate, endDate);
-            for (Payment p : payments) {
-                income += p.getAmount();
-            }
-            return income;
-        } catch (Exception e) {
-            logger.error("Error calculating income for month: " + month, e);
-            return 0.0;
-        }
-    }
-
     public List<IncomeStats> getTotalIncomeByMonthInRange(LocalDate startDate, LocalDate endDate) {
         try {
             return paymentRepository.findTotalIncomeByMonthInRange(startDate, endDate);

@@ -31,20 +31,27 @@ public class NotificationService {
 
     private static final Logger logger = LoggerFactory.getLogger(PaymentService.class);
 
-    @Scheduled(cron = "0 0 0 * * ?") // Runs every day at midnight
+    @Scheduled(cron = "0 45 12 * * ?") // Runs every day at midnight
     public void sendFeeReminders() {
         LocalDate today = LocalDate.now();
         List<Client> clients = clientRepository.findAll();
+        List<Client> activeClients = clients.stream()
+                .filter(client -> client.getStatus().equals(Status.ACTIVE))
+                .toList();
 
-        for (Client client : clients) {
-            LocalDate startDate = client.getRegistrationDate();
-            if (startDate != null && today.isAfter(startDate) && today.minusDays(30).equals(startDate)) {
-                sendReminderEmail(client);
-            } else if(startDate != null && today.isAfter(startDate) && today.minusDays(45).equals(startDate)) {
-                sendLateFeeReminderMail(client);
+        for (Client client : activeClients) {
+            LocalDate registrationDate = client.getRegistrationDate();
+            if (registrationDate != null && !today.isBefore(registrationDate)) {
+                long daysSinceRegistration = java.time.temporal.ChronoUnit.DAYS.between(registrationDate, today);
+                if (daysSinceRegistration % 30 == 0) {
+                    sendReminderEmail(client);
+                } else if (daysSinceRegistration % 45 == 0) {
+                    sendLateFeeReminderMail(client);
+                }
             }
         }
     }
+
 
     @Transactional
     private void sendLateFeeReminderMail(Client client) {
@@ -95,9 +102,11 @@ public class NotificationService {
         }
         try {
             mailSender.send(message);
+            assert client != null;
             saveEmail(client.getEmail(), "Custom Mail", mail.getMessage(), "SENT", "EMAIL", client.getPhone());
             logger.info("Reminder email sent successfully to {}", client.getEmail());
         } catch (MailException e) {
+            assert client != null;
             logger.error("Error while sending email to {}: {}", client.getEmail(), e.getMessage());
             saveEmail(client.getEmail(), "Custom Mail", mail.getMessage(), "FAILED", "EMAIL", client.getPhone());
         }
@@ -114,5 +123,15 @@ public class NotificationService {
         notification.setRecipientPhone(phone);
         notification.setStatus(MsgStatus.valueOf(status));
         notificationRepository.save(notification);
+    }
+
+    public List<Notification> getAllNotifications() {
+        try {
+           Optional<List<Notification>> notificationList = Optional.of(notificationRepository.findAll());
+            return notificationList.get();
+        }catch (Exception e){
+            logger.error("Error fetching notifications {}",e.getMessage());
+        }
+        return null;
     }
 }

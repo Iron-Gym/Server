@@ -1,5 +1,6 @@
 package com.kbm.Iron.Gym.controller;
 
+import com.kbm.Iron.Gym.dto.IncomeCount;
 import com.kbm.Iron.Gym.dto.PaymentStatusDTO;
 import com.kbm.Iron.Gym.entity.Client;
 import com.kbm.Iron.Gym.entity.Payment;
@@ -19,7 +20,6 @@ public class PaymentController {
 
     @Autowired
     PaymentService paymentService;
-
 
     //save payment to a specific user
     @PostMapping("/{clientId}")
@@ -51,11 +51,6 @@ public class PaymentController {
         return paymentList.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    //get income of a month
-    @GetMapping("/income")
-    public ResponseEntity<Double> thisMonthIncome(
-            @RequestParam("month") @DateTimeFormat(pattern = "yyyy-MM") YearMonth month){
-        return ResponseEntity.ok(paymentService.getIncomeOfaMonth(month));
-    }
+
 
 }
